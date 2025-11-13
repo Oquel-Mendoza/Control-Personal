@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control Personal</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#2563eb">
+
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNlYiIvPjxwYXRoIGQ9Ik0xMjggMTc2djE2MGMwIDE3LjcgMTQuMyAzMiAzMiAzMmgxOTJjMTcuNyAwIDMyLTE0LjMgMzItMzJ2LTE2MGMwLTE3LjctMTQuMy0zMi0zMi0zMkgxNjBjLTE3LjcgMC0zMiAxNC4zLTMyIDMyem0zMi0xMGgxOTJjNS45IDAgMTAgNC41IDEwIDEwdjE2MGMwIDUuNS00LjIgMTAtMTAgMTBIMTYwYy01LjUgMC0xMC00LjUtMTAtMTBWMTc2YzAtNS41IDQuNS0xMCAxMC0xMHoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTMyMCAyNTZoMzJ2MzJoLTMyeiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTQwIDE0MGgyMzIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMzAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzI1NjNlYiIvPjxwYXRoIGQ9Ik0xMjggMTc2djE2MGMwIDE3LjcgMTQuMyAzMiAzMiAzMmgxOTJjMTcuNyAwIDMyLTE0LjMgMzItMzJ2LTE2MGMwLTE3LjctMTQuMy0zMi0zMi0zMkgxNjBjLTE3LjcgMC0zMiAxNC4zLTMyIDMyem0zMi0xMGgxOTJjNS45IDAgMTAgNC41IDEwIDEwdjE2MGMwIDUuNS00LjIgMTAtMTAgMTBIMTYwYy01LjUgMC0xMC00LjUtMTAtMTBWMTc2YzAtNS41IDQuNS0xMCAxMC0xMHoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTMyMCAyNTZoMzJ2MzJoLTMyeiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMTQwIDE0MGgyMzIiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMzAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { slate: { 850: '#1e293b', 900: '#0f172a' } }, fontFamily: { sans: ['system-ui', '-apple-system', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        body { -webkit-tap-highlight-color: transparent; user-select: none; overscroll-behavior-y: none; }
+        input, textarea { user-select: text; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .toast-in { animation: toastIn 0.3s ease-out forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .toast-out { animation: toastOut 0.3s ease-in forwards; }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+        #loading-screen { position: fixed; inset: 0; background: #0f172a; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 9999; transition: opacity 0.5s; }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 h-screen overflow-hidden select-none transition-colors duration-300">
+    
+    <div id="loading-screen">
+        <div class="text-4xl mb-4">📂</div>
+        <h2 class="text-xl font-bold">Control Personal</h2>
+        <p class="text-sm text-slate-400 mt-2">Cargando Sistema...</p>
+    </div>
+
+    <div id="root" class="h-full overflow-y-auto scrollbar-hide"></div>
+
+    <script>
+        window.onerror = function(msg, url, line) {
+            const loader = document.getElementById('loading-screen');
+            if(loader) {
+                loader.innerHTML = `<div style="padding:20px;text-align:center;color:#ff6b6b;"><h3>⚠️ Error</h3><p>${msg}</p></div>`;
+            }
+        };
+        // REGISTRO DEL SERVICE WORKER (CLAVE PARA PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { 
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registrado!', reg))
+                    .catch(err => console.log('SW falló', err)); 
+            });
+        }
+
+        // Quitar la pantalla de carga pase lo que pase
+        setTimeout(() => {
+            const loader = document.getElementById('loading-screen');
+            if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+        }, 1500); // 1.5 segundos
+    </script>
+
+    <script type="module">
+        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@18.2.0';
+        import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
+        import { 
+            Wallet, Plus, X, ChevronRight, Lock, LogOut, 
+            LayoutGrid, PieChart as PieIcon, Settings, Trash2, 
+            ShoppingBag, Coffee, Car, Home, Zap, Heart, Briefcase, 
+            Smartphone, Plane, Gift, Music, Book, Smile, Star, 
+            TrendingUp, TrendingDown, Target, Sun, Moon, User, 
+            RefreshCcw, UserCircle2, Palette, Check, AlertTriangle,
+            Clock, ShieldCheck, Ban, FileText, Download, Calendar, FileSpreadsheet,
+            Upload, Edit3, Save, MoreVertical, AlertCircle
+        } from 'https://esm.sh/lucide-react@0.263.1';
+
+        const ICON_MAP = { ShoppingBag, Coffee, Car, Home, Zap, Heart, Briefcase, Smartphone, Plane, Gift, Music, Book, Smile, Star, Target, User, Wallet, FileText };
+        
+        const THEME_COLORS = {
+            blue:   { name: 'Azul',   bg: 'bg-blue-600',   text: 'text-blue-600',   ring: 'ring-blue-400' },
+            indigo: { name: 'Índigo', bg: 'bg-indigo-500', text: 'text-indigo-500', ring: 'ring-indigo-400' },
+            emerald:{ name: 'Verde',  bg: 'bg-emerald-600',text: 'text-emerald-600',ring: 'ring-emerald-400' },
+            orange: { name: 'Naranja',bg: 'bg-orange-500', text: 'text-orange-500', ring: 'ring-orange-400' },
+            rose:   { name: 'Rosa',   bg: 'bg-rose-500',   text: 'text-rose-500',   ring: 'ring-rose-400' },
+            slate:  { name: 'Negro',  bg: 'bg-slate-700',  text: 'text-slate-700',  ring: 'ring-slate-400' },
+        };
+
+        const DEFAULT_CATS = [
+            { id: 'c1', name: 'Comida', icon: 'Coffee', color: '#F59E0B' },
+            { id: 'c2', name: 'Transporte', icon: 'Car', color: '#3B82F6' },
+            { id: 'c3', name: 'Casa', icon: 'Home', color: '#10B981' },
+            { id: 'c4', name: 'Ocio', icon: 'Smile', color: '#EC4899' },
+        ];
+
+        // --- HOOKS DE UTILIDAD ---
+        const useLocalStorage = (key, fallback) => {
+            const [value, setValue] = useState(() => {
+                try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : fallback; } catch (e) { return fallback; }
+            });
+            useEffect(() => {
+                try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error(`Error guardando ${key} en localStorage`, e); }
+            }, [key, value]);
+            return [value, setValue];
+        };
+        
+        // --- FORMATTERS ---
+        const formatCordoba = (amount) => new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO', maximumFractionDigits: 0 }).format(amount);
+        const formatDate = (isoString) => { 
+            if (!isoString) return ''; 
+            const date = new Date(isoString); 
+            return date.toLocaleDateString('es-NI', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' }); 
+        };
+        const getNowInput = () => { const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); return now.toISOString().slice(0, 16); };
+
+        // --- COMPONENTES UI ---
+        const Card = ({ children, className = "", onClick }) => React.createElement('div', { onClick, className: `bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm ${className}` }, children);
+        const IconRenderer = ({ name, size = 20, className }) => { const Icon = ICON_MAP[name] || Star; return React.createElement(Icon, { size, className }); };
+
+        const Toast = ({ message, show, onDismiss }) => {
+            useEffect(() => {
+                if (show) { const timer = setTimeout(onDismiss, 2000); return () => clearTimeout(timer); }
+            }, [show, onDismiss]);
+            return React.createElement('div', { className: `fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-slate-900 dark:bg-slate-700 text-white text-sm font-bold py-3 px-5 rounded-full shadow-lg ${show ? 'toast-in' : 'toast-out'}` }, message);
+        };
+
+        const StatsTab = ({ data, categories, darkMode }) => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                if (!chartRef.current) return;
+
+                const expenseData = categories.map(cat => {
+                    const amount = data.filter(t => t.type === 'expense' && t.categoryId === cat.id).reduce((sum, t) => sum + Number(t.amount), 0);
+                    return { label: cat.name, amount, color: cat.color };
+                }).filter(c => c.amount > 0);
+
+                if (chartInstance.current) chartInstance.current.destroy();
+                
+                if (expenseData.length === 0) return; // No dibujar si no hay datos
+
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: expenseData.map(d => d.label),
+                        datasets: [{ data: expenseData.map(d => d.amount), backgroundColor: expenseData.map(d => d.color), borderWidth: 2, borderColor: darkMode ? '#1e293b' : '#ffffff' }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        cutout: '70%',
+                    }
+                });
+
+                return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+            }, [data, categories, darkMode]);
+
+            const totalExpense = data.filter(t => t.type === 'expense').reduce((a, b) => a + Number(b.amount), 0);
+
+            return React.createElement(Card, { className: "flex flex-col items-center pt-8 pb-8 fade-in" },
+                React.createElement("div", { className: "w-full flex justify-between items-center mb-6" },
+                    React.createElement("h3", { className: "font-bold text-slate-800 dark:text-white" }, "Gastos por Categoría"),
+                    React.createElement("button", { onClick: () => setShowReportModal(true), className: "flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" },
+                        React.createElement(Download, { size: 14 }), "Exportar"
+                    )
+                ),
+                totalExpense === 0 ? React.createElement("p", { className: "text-center text-slate-400 text-sm py-10" }, "No hay datos de gastos") :
+                React.createElement(React.Fragment, null,
+                    React.createElement("div", { className: "relative w-48 h-48 mb-6" },
+                        React.createElement("canvas", { ref: chartRef }),
+                        React.createElement("div", { className: "absolute inset-0 flex flex-col items-center justify-center" }, 
+                            React.createElement("span", { className: "text-xs text-slate-400" }, "Total"),
+                            React.createElement("span", { className: "font-bold text-2xl text-slate-800 dark:text-white" }, formatCordoba(totalExpense))
+                        )
+                    ),
+                    React.createElement("div", { className: "w-full space-y-2" },
+                        categories.map(cat => {
+                            const amount = data.filter(t => t.type === 'expense' && t.categoryId === cat.id).reduce((sum, t) => sum + Number(t.amount), 0);
+                            if(amount === 0) return null;
+                            const percent = (amount / totalExpense * 100).toFixed(0);
+                            return React.createElement("div", { key: cat.id, className: "flex items-center justify-between text-sm p-2 rounded-lg" },
+                                React.createElement("div", { className: "flex items-center gap-3" }, 
+                                    React.createElement("div", { className: "w-3 h-3 rounded-full", style: { backgroundColor: cat.color } }), 
+                                    React.createElement("span", { className: "text-slate-600 dark:text-slate-300" }, cat.name),
+                                    React.createElement("span", { className: "text-xs font-bold text-slate-400" }, percent, "%")
+                                ),
+                                React.createElement("span", { className: "font-bold text-slate-700 dark:text-white" }, formatCordoba(amount))
+                            );
+                        })
+                    )
+                )
+            );
+        };
+
+        // --- FUNCIONES DE REPORTE ---
+        const generatePDF = (data, profileName, rangeName, categories) => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(20); doc.setTextColor(37, 99, 235); doc.text("Reporte Financiero", 14, 20);
+            doc.setFontSize(10); doc.setTextColor(100); doc.text(`Generado por: Control Personal (${profileName})`, 14, 28); doc.text(`Periodo: ${rangeName}`, 14, 33); doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 38);
+
+            const income = data.filter(t => t.type === 'income').reduce((a,b) => a + Number(b.amount), 0);
+            const expense = data.filter(t => t.type === 'expense').reduce((a,b) => a + Number(b.amount), 0);
+            const balance = income - expense;
+
+            doc.autoTable({ startY: 45, head: [['Resumen', 'Monto (C$)']], body: [['Total Ingresos', formatCordoba(income)], ['Total Gastos', formatCordoba(expense)], ['Balance Final', formatCordoba(balance)]], theme: 'grid', headStyles: { fillColor: [37, 99, 235] } });
+            const rows = data.map(t => { const cat = categories.find(c => c.id === t.categoryId) || { name: 'General' }; return [formatDate(t.date), cat.name, t.description, t.type === 'income' ? 'Ingreso' : 'Gasto', formatCordoba(t.amount)]; });
+            doc.text("Detalle de Movimientos", 14, doc.lastAutoTable.finalY + 10);
+            doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['Fecha', 'Categoría', 'Nota', 'Tipo', 'Monto']], body: rows, theme: 'striped', styles: { fontSize: 8 }, headStyles: { fillColor: [30, 41, 59] } });
+            doc.save(`Reporte_${profileName}_${rangeName}.pdf`);
+        };
+
+        const generateExcel = (data, profileName, rangeName, categories) => {
+            const rows = data.map(t => { const cat = categories.find(c => c.id === t.categoryId) || { name: 'General' }; return { Fecha: formatDate(t.date), Hora: new Date(t.date).toLocaleTimeString(), Categoria: cat.name, Descripcion: t.description, Tipo: t.type === 'income' ? 'Ingreso' : 'Gasto', Monto: t.amount }; });
+            const ws = XLSX.utils.json_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Movimientos"); XLSX.writeFile(wb, `Reporte_${profileName}.xlsx`);
+        };
+        
+        function App() {
+            // --- STATE ---
+            const [config, setConfig] = useLocalStorage('ew_ctrl_config', null);
+            const [darkMode, setDarkMode] = useLocalStorage('ew_dark_mode', true);
+            const [isAuth, setIsAuth] = useState(false);
+            const [pinInput, setPinInput] = useState('');
+            const [errorMsg, setErrorMsg] = useState('');
+            const [newUserName, setNewUserName] = useState('');
+            const [newUserPin, setNewUserPin] = useState('');
+            const [newUserPinConfirm, setNewUserPinConfirm] = useState('');
+            const [transactions, setTransactions] = useLocalStorage('ew_ctrl_trans', []);
+            const [categories, setCategories] = useLocalStorage('ew_ctrl_cats', DEFAULT_CATS);
+            const [goals, setGoals] = useLocalStorage('ew_ctrl_goals', []);
+            const [walletMode, setWalletMode] = useState('personal');
+            const [activeTab, setActiveTab] = useState('home');
+            
+            // --- MODAL STATE ---
+            const [showTransModal, setShowTransModal] = useState(false);
+            const [showCatModal, setShowCatModal] = useState(false);
+            const [showCreateCat, setShowCreateCat] = useState(false);
+            const [showGoalModal, setShowGoalModal] = useState(false);
+            const [showNameEdit, setShowNameEdit] = useState(false);
+            const [showResetConfirm, setShowResetConfirm] = useState(false);
+            const [showReportModal, setShowReportModal] = useState(false);
+            const [showManageCat, setShowManageCat] = useState(false);
+            const [editingCat, setEditingCat] = useState(null);
+            
+            // --- FORM STATE ---
+            const [formError, setFormError] = useState('');
+            const [tempName, setTempName] = useState('');
+            const [reportFilter, setReportFilter] = useState('month');
+            const [customStart, setCustomStart] = useState('');
+            const [customEnd, setCustomEnd] = useState('');
+            const [transForm, setTransForm] = useState({ amount: '', desc: '', type: 'expense', categoryId: null, date: getNowInput() });
+            const [catForm, setCatForm] = useState({ name: '', icon: 'Star', color: '#6366f1' });
+            const [goalForm, setGoalForm] = useState({ name: '', target: '' });
+            
+            // --- NUEVO STATE PARA MEJORAS ---
+            const [editingTx, setEditingTx] = useState(null); // Guarda la Tx que se está editando
+            const [toast, setToast] = useState(null); // { message: 'Hola' }
+
+            const fileInputRef = useRef(null); // Para el botón de importar
+
+            // --- EFECTOS ---
+            useEffect(() => {
+                if (config) {
+                    let fixed = false;
+                    const newConfig = { ...config };
+                    if (!newConfig.personal) { newConfig.personal = { name: 'Mío', theme: 'blue', gender: 'male' }; fixed = true; }
+                    if (!newConfig.partner) { newConfig.partner = { name: 'Pareja', theme: 'rose', gender: 'female' }; fixed = true; }
+                    if (fixed) setConfig(newConfig);
+                }
+            }, [config]);
+
+            useEffect(() => {
+                document.documentElement.classList.toggle('dark', darkMode);
+            }, [darkMode]);
+
+            // --- CÁLCULOS DERIVADOS ---
+            const safeConfig = config || { personal: { name: 'Usuario' }, partner: { name: 'Pareja' } };
+            const currentProfile = safeConfig[walletMode] || (walletMode === 'personal' ? { name: 'Mío', theme: 'blue' } : { name: 'Pareja', theme: 'rose' });
+            const theme = THEME_COLORS[currentProfile.theme] || THEME_COLORS.blue;
+            
+            const currentData = transactions.filter(t => t.walletMode === walletMode);
+            const currentGoals = goals.filter(g => g.walletMode === walletMode);
+         
