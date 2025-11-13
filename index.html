@@ -5,30 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Personal</title>
     
-    <!-- --- MANIFIESTO PWA EMBEBIDO --- -->
-    <link rel="manifest" href='data:application/manifest+json,{
-        "name": "Control Personal",
-        "short_name": "Mi Control",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#0f172a",
-        "theme_color": "#2563eb",
-        "orientation": "portrait",
-        "scope": ".",
-        "icons": [
-            {
-                "src": "https://cdn-icons-png.flaticon.com/512/891/891630.png",
-                "sizes": "192x192",
-                "type": "image/png"
-            },
-            {
-                "src": "https://cdn-icons-png.flaticon.com/512/891/891630.png",
-                "sizes": "512x512",
-                "type": "image/png"
-            }
-        ]
-    }' />
+    <!-- CONEXIÓN CON LOS ARCHIVOS DE INSTALACIÓN -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#2563eb">
 
+    <!-- Configuración iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mi Control">
@@ -53,6 +34,17 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 h-screen overflow-hidden select-none transition-colors duration-300">
     <div id="root" class="h-full overflow-y-auto scrollbar-hide"></div>
+
+    <!-- Registro del Service Worker para Instalación -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('App lista para instalar', reg))
+                    .catch(err => console.log('Error SW', err));
+            });
+        }
+    </script>
 
     <!-- Lógica de la App -->
     <script type="module">
@@ -248,212 +240,11 @@
                         )
                     ),
 
-                    /* PANTALLA 3: APP INTERNA (SIN CAMBIOS, COMO PEDISTE) */
+                    /* PANTALLA 3: APP INTERNA */
                     config && isAuth && React.createElement(React.Fragment, null,
                         // Header
                         React.createElement("header", { className: `${theme.bg} pt-8 pb-20 px-6 rounded-b-[2.5rem] shadow-lg relative overflow-hidden transition-colors duration-500` },
                             React.createElement("div", { className: "relative z-10 flex justify-center mb-6" },
                                 React.createElement("div", { className: "bg-black/20 p-1 rounded-full flex backdrop-blur-sm" },
                                     React.createElement("button", { onClick: () => setWalletMode('personal'), className: `px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${walletMode === 'personal' ? 'bg-white text-slate-800 shadow-sm' : 'text-white/70'}` }, React.createElement(User, { size: 14 }), safeConfig.personal?.name || 'Mío'),
-                                    React.createElement("button", { onClick: () => setWalletMode('partner'), className: `px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${walletMode === 'partner' ? 'bg-white text-slate-800 shadow-sm' : 'text-white/70'}` }, React.createElement(Heart, { size: 14 }), safeConfig.partner?.name || 'Pareja')
-                                )
-                            ),
-                            React.createElement("div", { className: "relative z-10 text-center text-white" },
-                                React.createElement("span", { className: "text-white/80 text-xs font-medium uppercase tracking-wider" }, "Saldo Disponible"),
-                                React.createElement("h1", { className: "text-5xl font-bold tracking-tight mt-1 mb-6" }, formatCordoba(balance)),
-                                React.createElement("div", { className: "flex justify-center gap-3" },
-                                    React.createElement("div", { className: "bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2 border border-white/5" }, React.createElement("div", { className: "bg-emerald-400/20 p-1 rounded-full" }, React.createElement(TrendingUp, { size: 14, className: "text-emerald-200" })), React.createElement("span", { className: "font-bold text-sm" }, "+", formatCordoba(income))),
-                                    React.createElement("div", { className: "bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2 border border-white/5" }, React.createElement("div", { className: "bg-rose-400/20 p-1 rounded-full" }, React.createElement(TrendingDown, { size: 14, className: "text-rose-200" })), React.createElement("span", { className: "font-bold text-sm" }, "-", formatCordoba(expense)))
-                                )
-                            )
-                        ),
-
-                        // Contenido Dinámico
-                        React.createElement("main", { className: "px-5 -mt-10 relative z-20 space-y-6 pb-24 fade-in" },
-                            // INICIO
-                            activeTab === 'home' && React.createElement(React.Fragment, null,
-                                React.createElement("div", { className: "grid grid-cols-2 gap-4" },
-                                    React.createElement("button", { onClick: () => { setTransForm({ ...transForm, type: 'income' }); setShowTransModal(true); setFormError(''); }, className: "bg-white dark:bg-slate-850 p-4 rounded-2xl shadow-sm flex items-center gap-3 active:scale-95 transition-transform border border-slate-100 dark:border-slate-800" }, React.createElement("div", { className: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 p-3 rounded-full" }, React.createElement(TrendingUp, { size: 20 })), React.createElement("div", { className: "text-left" }, React.createElement("span", { className: "block font-bold text-sm text-slate-700 dark:text-white" }, "Ingreso"), React.createElement("span", { className: "text-[10px] text-slate-400" }, "Recibir"))),
-                                    React.createElement("button", { onClick: () => { setTransForm({ ...transForm, type: 'expense' }); setShowTransModal(true); setFormError(''); }, className: "bg-white dark:bg-slate-850 p-4 rounded-2xl shadow-sm flex items-center gap-3 active:scale-95 transition-transform border border-slate-100 dark:border-slate-800" }, React.createElement("div", { className: "bg-rose-50 dark:bg-rose-900/20 text-rose-500 dark:text-rose-400 p-3 rounded-full" }, React.createElement(TrendingDown, { size: 20 })), React.createElement("div", { className: "text-left" }, React.createElement("span", { className: "block font-bold text-sm text-slate-700 dark:text-white" }, "Gasto"), React.createElement("span", { className: "text-[10px] text-slate-400" }, "Pagar")))
-                                ),
-                                React.createElement("div", null,
-                                    React.createElement("h3", { className: "font-bold text-slate-500 dark:text-slate-500 text-xs uppercase tracking-wider mb-3 ml-1" }, "Movimientos Recientes"),
-                                    React.createElement("div", { className: "space-y-3" },
-                                        sortedData.length === 0 ? React.createElement("div", { className: "text-center py-12 bg-white dark:bg-slate-850 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 opacity-60 flex flex-col items-center" }, React.createElement(Wallet, { size: 40, className: "text-slate-300 dark:text-slate-600 mb-2" }), React.createElement("p", { className: "text-slate-400 dark:text-slate-500 text-sm" }, "Sin movimientos")) :
-                                        sortedData.slice(0, 15).map(t => {
-                                            const cat = categories.find(c => c.id === t.categoryId) || DEFAULT_CATS[0];
-                                            return React.createElement(Card, { key: t.id, className: "!p-3 flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-800/50" },
-                                                React.createElement("div", { className: "flex items-center gap-4" },
-                                                    React.createElement("div", { style: { backgroundColor: `${cat.color}15`, color: cat.color }, className: "w-12 h-12 rounded-2xl flex items-center justify-center" }, React.createElement(IconRenderer, { name: cat.icon })),
-                                                    React.createElement("div", null, React.createElement("p", { className: "font-bold text-sm text-slate-700 dark:text-white" }, cat.name), React.createElement("div", { className: "flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500" }, React.createElement("span", null, formatDate(t.date)), t.description && React.createElement("span", { className: "truncate max-w-[80px]" }, "• ", t.description)))
-                                                ),
-                                                React.createElement("div", { className: "text-right" }, React.createElement("span", { className: `font-bold text-sm block ${t.type === 'income' ? 'text-emerald-500' : 'text-slate-700 dark:text-slate-300'}` }, t.type === 'income' ? '+' : '-', formatCordoba(t.amount)))
-                                            );
-                                        })
-                                    )
-                                )
-                            ),
-                            // METAS
-                            activeTab === 'goals' && React.createElement("div", { className: "space-y-4 fade-in" },
-                                React.createElement("div", { className: "flex justify-between items-center px-1" }, React.createElement("h3", { className: "font-bold text-slate-700 dark:text-slate-200" }, "Mis Metas"), React.createElement("button", { onClick: () => setShowGoalModal(true), className: `text-xs font-bold px-4 py-2 rounded-lg ${theme.bg} text-white shadow-sm` }, "+ Nueva")),
-                                React.createElement("div", { className: "grid gap-4" },
-                                    currentGoals.length === 0 ? React.createElement("div", { className: "text-center py-16 text-slate-400 dark:text-slate-600 italic text-sm" }, "No tienes metas activas") :
-                                    currentGoals.map(g => {
-                                        const percent = Math.min(100, Math.round((g.current / g.target) * 100));
-                                        return React.createElement(Card, { key: g.id, className: "relative overflow-hidden border-l-4 border-slate-200 dark:border-slate-800", style: { borderLeftColor: g.color } },
-                                            React.createElement("div", { className: "flex justify-between items-end mb-3 relative z-10" },
-                                                React.createElement("div", null, React.createElement("h4", { className: "font-bold text-lg text-slate-800 dark:text-white" }, g.name), React.createElement("p", { className: "text-xs text-slate-500 dark:text-slate-400" }, "Meta: ", formatCordoba(g.target))),
-                                                React.createElement("div", { className: "text-right" }, React.createElement("span", { className: "text-xl font-bold text-slate-800 dark:text-white" }, formatCordoba(g.current)), React.createElement("span", { className: "block text-[10px] font-bold text-slate-400 uppercase" }, percent, "% logrado"))
-                                            ),
-                                            React.createElement("div", { className: "w-full bg-slate-100 dark:bg-black h-3 rounded-full overflow-hidden mb-4 relative" }, React.createElement("div", { className: "h-full transition-all duration-700 rounded-full", style: { width: `${percent}%`, backgroundColor: g.color } })),
-                                            React.createElement("div", { className: "flex justify-end gap-3 relative z-10 pt-3 border-t border-slate-50 dark:border-slate-800" },
-                                                React.createElement("button", { onClick: () => { const input = prompt(`Abonar a ${g.name} (C$):`); const add = Number(input); if (add && add > 0) { if (add > balance) { alert(`Sin fondos suficientes. Saldo: ${formatCordoba(balance)}`); } else { setGoals(goals.map(x => x.id === g.id ? { ...x, current: x.current + add } : x)); } } }, className: `text-xs font-bold ${theme.text} bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700` }, "Abonar"),
-                                                React.createElement("button", { onClick: () => setGoals(goals.filter(x => x.id !== g.id)), className: "p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg" }, React.createElement(Trash2, { size: 16 }))
-                                            )
-                                        );
-                                    })
-                                )
-                            ),
-                            // ANÁLISIS
-                            activeTab === 'stats' && React.createElement(Card, { className: "flex flex-col items-center pt-8 pb-8 fade-in" },
-                                React.createElement("h3", { className: "font-bold text-slate-800 dark:text-white mb-6" }, "Gastos por Categoría"),
-                                React.createElement("div", { className: "w-full space-y-2" },
-                                    expense === 0 ? React.createElement("p", { className: "text-center text-slate-400 text-sm" }, "No hay datos de gastos") :
-                                    categories.map(cat => {
-                                        const amount = currentData.filter(t => t.type === 'expense' && t.categoryId === cat.id).reduce((sum, t) => sum + Number(t.amount), 0);
-                                        if(amount === 0) return null;
-                                        return React.createElement("div", { key: cat.id, className: "flex items-center justify-between text-sm p-2 rounded-lg" },
-                                            React.createElement("div", { className: "flex items-center gap-3" }, React.createElement("div", { className: "w-3 h-3 rounded-full", style: { backgroundColor: cat.color } }), React.createElement("span", { className: "text-slate-600 dark:text-slate-300" }, cat.name)),
-                                            React.createElement("span", { className: "font-bold text-slate-700 dark:text-white" }, formatCordoba(amount))
-                                        );
-                                    })
-                                )
-                            ),
-                            // PERFIL
-                            activeTab === 'profile' && React.createElement("div", { className: "space-y-5 fade-in" },
-                                React.createElement(Card, { className: "flex items-center gap-4 bg-slate-800 dark:bg-slate-900 text-white border-none shadow-md" },
-                                    React.createElement("div", { className: "w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-3xl font-bold border-2 border-white/10" }, currentProfile.gender === 'female' ? React.createElement(UserCircle2, { size: 40 }) : React.createElement(User, { size: 40 })),
-                                    React.createElement("div", { className: "flex-1" },
-                                        React.createElement("div", { className: "flex items-center gap-2" }, 
-                                            React.createElement("h2", { className: "font-bold text-xl" }, currentProfile.name), 
-                                            React.createElement("button", { onClick: () => { setTempName(currentProfile.name); setShowNameEdit(true); }, className: "p-1 bg-white/10 rounded-full hover:bg-white/20 transition-colors" }, React.createElement(Settings, { size: 12 }))
-                                        ),
-                                        React.createElement("p", { className: "text-slate-400 text-xs uppercase tracking-wide" }, "ID: ", walletMode === 'personal' ? 'Propietario' : 'Pareja')
-                                    )
-                                ),
-                                React.createElement("div", { className: "bg-white dark:bg-slate-850 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800" },
-                                    React.createElement("h4", { className: "text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2" }, React.createElement(Palette, { size: 14 }), " Color del Tema"),
-                                    React.createElement("div", { className: "flex justify-between gap-2 overflow-x-auto pb-2 scrollbar-hide" }, Object.entries(THEME_COLORS).map(([key, val]) => React.createElement("button", { key, onClick: () => updateProfile({ theme: key }), className: `w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${val.bg} ${currentProfile.theme === key ? `ring-4 ring-offset-2 ${val.ring} ring-offset-white dark:ring-offset-slate-900 scale-110` : 'opacity-50 hover:opacity-100'}` }, currentProfile.theme === key && React.createElement(Check, { size: 16, className: "text-white" }))))
-                                ),
-                                React.createElement("div", { className: "bg-white dark:bg-slate-850 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800" },
-                                    React.createElement("div", { className: "p-4 flex items-center justify-between" },
-                                        React.createElement("span", { className: "font-medium text-slate-700 dark:text-white text-sm flex items-center gap-3" }, React.createElement(User, { size: 18, className: "text-slate-400" }), " Género"),
-                                        React.createElement("div", { className: "flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg" },
-                                            React.createElement("button", { onClick: () => updateProfile({ gender: 'male' }), className: `px-3 py-1 rounded-md text-xs font-bold transition-all ${currentProfile.gender === 'male' ? 'bg-white dark:bg-slate-700 shadow text-blue-500' : 'text-slate-400'}` }, "Hombre"),
-                                            React.createElement("button", { onClick: () => updateProfile({ gender: 'female' }), className: `px-3 py-1 rounded-md text-xs font-bold transition-all ${currentProfile.gender === 'female' ? 'bg-white dark:bg-slate-700 shadow text-pink-500' : 'text-slate-400'}` }, "Mujer")
-                                        )
-                                    ),
-                                    React.createElement("button", { onClick: () => setDarkMode(!darkMode), className: "w-full p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" }, React.createElement("span", { className: "font-medium text-slate-700 dark:text-white text-sm flex items-center gap-3" }, React.createElement(Moon, { size: 18, className: "text-slate-400" }), " Modo Oscuro"), React.createElement("div", { className: `w-10 h-6 rounded-full relative transition-colors ${darkMode ? theme.bg : 'bg-slate-200'}` }, React.createElement("div", { className: `absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${darkMode ? 'left-5' : 'left-1'}` }))),
-                                    React.createElement("button", { onClick: () => setShowResetConfirm(true), className: "w-full p-4 flex items-center justify-between hover:bg-rose-50 dark:hover:bg-rose-900/10 text-rose-500 transition-colors" }, React.createElement("span", { className: "font-medium text-sm flex items-center gap-3" }, React.createElement(Trash2, { size: 18, className: "text-rose-400" }), " Borrar datos de ", currentProfile.name)),
-                                    React.createElement("button", { onClick: () => setIsAuth(false), className: "w-full p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-colors" }, React.createElement("span", { className: "font-medium text-sm flex items-center gap-3" }, React.createElement(LogOut, { size: 18, className: "text-slate-400" }), " Cerrar Sesión"))
-                                )
-                            )
-                        ),
-                        // NAV
-                        React.createElement("nav", { className: "fixed bottom-0 w-full bg-white dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 pb-safe z-30 transition-colors duration-300" },
-                            React.createElement("div", { className: "flex justify-around items-center p-2" },
-                                ['home', 'stats', 'plus', 'goals', 'profile'].map(item => {
-                                    if (item === 'plus') return React.createElement("div", { key: item, className: "relative -top-6" }, React.createElement("button", { onClick: () => { setTransForm({ ...transForm, type: 'expense' }); setShowTransModal(true); setFormError(''); }, className: `${theme.bg} text-white p-4 rounded-full shadow-lg active:scale-95 transition-transform border-4 border-slate-50 dark:border-slate-900` }, React.createElement(Plus, { size: 28 })));
-                                    const Icon = item === 'home' ? LayoutGrid : item === 'stats' ? PieIcon : item === 'goals' ? Target : Settings;
-                                    const label = item === 'home' ? 'Inicio' : item === 'stats' ? 'Análisis' : item === 'goals' ? 'Metas' : 'Perfil';
-                                    return React.createElement("button", { key: item, onClick: () => setActiveTab(item), className: `flex flex-col items-center p-2 rounded-xl transition-colors ${activeTab === item ? `${theme.text} dark:text-white` : 'text-slate-400 dark:text-slate-600'}` }, React.createElement(Icon, { size: 24, strokeWidth: activeTab === item ? 2.5 : 2 }), React.createElement("span", { className: "text-[10px] font-bold mt-1" }, label));
-                                })
-                            )
-                        ),
-                        // MODALES
-                        showTransModal && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-transparent dark:border-slate-800" },
-                                React.createElement("div", { className: "flex justify-between items-center mb-6" }, React.createElement("h3", { className: "font-bold text-lg text-slate-800 dark:text-white" }, "Nuevo Movimiento"), React.createElement("button", { onClick: () => setShowTransModal(false), className: "p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700" }, React.createElement(X, { size: 20, className: "text-slate-600 dark:text-white" }))),
-                                formError && React.createElement("div", { className: "mb-4 p-3 bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 rounded-xl flex items-center gap-3" }, React.createElement(Ban, { className: "text-rose-500 shrink-0", size: 20 }), React.createElement("span", { className: "text-xs font-bold text-rose-600 dark:text-rose-400" }, formError)),
-                                React.createElement("div", { className: "space-y-5" },
-                                    React.createElement("div", { className: "flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl" },
-                                        React.createElement("button", { onClick: () => { setTransForm({ ...transForm, type: 'income' }); setFormError(''); }, className: `flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${transForm.type === 'income' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' : 'text-slate-400'}` }, "Ingreso"),
-                                        React.createElement("button", { onClick: () => { setTransForm({ ...transForm, type: 'expense' }); setFormError(''); }, className: `flex-1 py-2 rounded-lg font-bold text-sm transition-colors ${transForm.type === 'expense' ? 'bg-white dark:bg-slate-700 text-rose-500 shadow-sm' : 'text-slate-400'}` }, "Gasto")
-                                    ),
-                                    React.createElement("div", { className: "relative" }, React.createElement("span", { className: `absolute top-1/2 -translate-y-1/2 left-4 text-2xl font-bold ${formError ? 'text-rose-300' : 'text-slate-300 dark:text-slate-600'}` }, "C$"), React.createElement("input", { type: "number", inputMode: "numeric", placeholder: "0", className: `w-full pl-12 pr-4 py-4 text-4xl font-bold text-center bg-slate-50 dark:bg-black rounded-2xl outline-none transition-colors ${formError ? 'text-rose-500 ring-2 ring-rose-500 bg-rose-50 dark:bg-rose-900/10' : 'text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-200 dark:focus:ring-slate-700'}`, value: transForm.amount, onChange: e => { setTransForm({ ...transForm, amount: e.target.value }); setFormError(''); } })),
-                                    React.createElement("div", { className: "flex items-center gap-3 bg-slate-50 dark:bg-black p-3 rounded-2xl border border-slate-200 dark:border-slate-800" }, React.createElement(Clock, { size: 20, className: "text-slate-400" }), React.createElement("input", { type: "datetime-local", className: "bg-transparent outline-none w-full font-bold text-slate-700 dark:text-white text-sm", value: transForm.date, onChange: e => setTransForm({ ...transForm, date: e.target.value }) })),
-                                    React.createElement("button", { onClick: () => setShowCatModal(true), className: "w-full p-4 bg-white dark:bg-black border border-slate-200 dark:border-slate-800 rounded-2xl flex justify-between items-center hover:border-indigo-300 transition-colors" }, transForm.categoryId ? React.createElement("div", { className: "flex items-center gap-3" }, (() => { const c = categories.find(x => x.id === transForm.categoryId); return c ? React.createElement(React.Fragment, null, React.createElement("div", { style: { color: c.color } }, React.createElement(IconRenderer, { name: c.icon, size: 24 })), React.createElement("span", { className: "font-bold text-slate-700 dark:text-white" }, c.name)) : 'Error'; })()) : React.createElement("span", { className: "text-slate-400 font-medium" }, "Seleccionar Categoría"), React.createElement(ChevronRight, { size: 20, className: "text-slate-400" })),
-                                    React.createElement("input", { placeholder: "Nota (Opcional)", className: "w-full p-4 bg-white dark:bg-black border border-slate-200 dark:border-slate-800 rounded-2xl outline-none text-slate-800 dark:text-white placeholder-slate-400 focus:border-indigo-400 transition-colors", value: transForm.desc, onChange: e => setTransForm({ ...transForm, desc: e.target.value }) }),
-                                    React.createElement("button", { onClick: handleAddTrans, className: `w-full py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-95 transition-transform ${transForm.type === 'income' ? 'bg-emerald-500' : 'bg-rose-500'}` }, "Guardar")
-                                )
-                            )
-                        ),
-                        showCatModal && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 max-h-[80vh] overflow-y-auto shadow-2xl border border-transparent dark:border-slate-800" },
-                                React.createElement("div", { className: "flex justify-between items-center mb-6" }, React.createElement("h3", { className: "font-bold text-lg text-slate-800 dark:text-white" }, "Elige Categoría"), React.createElement("button", { onClick: () => setShowCatModal(false), className: "p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700" }, React.createElement(X, { size: 20, className: "text-slate-600 dark:text-white" }))),
-                                React.createElement("div", { className: "grid grid-cols-3 gap-3" },
-                                    categories.map(c => React.createElement("button", { key: c.id, onClick: () => { setTransForm({ ...transForm, categoryId: c.id }); setShowCatModal(false); }, className: "flex flex-col items-center gap-2 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors" }, React.createElement("div", { style: { color: c.color }, className: "bg-slate-50 dark:bg-slate-800 p-3 rounded-full" }, React.createElement(IconRenderer, { name: c.icon, size: 24 })), React.createElement("span", { className: "text-xs font-bold text-slate-600 dark:text-slate-300" }, c.name))),
-                                    React.createElement("button", { onClick: () => { setShowCatModal(false); setShowCreateCat(true); }, className: "flex flex-col items-center gap-2 p-3 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800" }, React.createElement("div", { className: "bg-slate-100 dark:bg-slate-800 p-3 rounded-full text-slate-400" }, React.createElement(Plus, { size: 24 })), React.createElement("span", { className: "text-xs font-bold text-slate-400" }, "Nueva"))
-                                )
-                            )
-                        ),
-                        showCreateCat && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-transparent dark:border-slate-800" },
-                                React.createElement("h3", { className: "font-bold text-lg mb-4 text-slate-800 dark:text-white" }, "Crear Categoría"),
-                                React.createElement("div", { className: "space-y-4" },
-                                    React.createElement("input", { placeholder: "Nombre", autoFocus: true, className: "w-full p-4 bg-slate-50 dark:bg-black rounded-xl border-none outline-none font-bold text-slate-800 dark:text-white placeholder-slate-400", value: catForm.name, onChange: e => setCatForm({ ...catForm, name: e.target.value }) }),
-                                    React.createElement("div", { className: "flex gap-2 overflow-x-auto pb-2 scrollbar-hide" }, Object.keys(ICON_MAP).map(k => React.createElement("button", { key: k, onClick: () => setCatForm({ ...catForm, icon: k }), className: `p-3 rounded-xl shrink-0 transition-colors ${catForm.icon === k ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}` }, React.createElement(IconRenderer, { name: k })))),
-                                    React.createElement("div", { className: "flex gap-3 overflow-x-auto pb-2 scrollbar-hide" }, ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#3b82f6', '#6366f1', '#ec4899'].map(c => React.createElement("button", { key: c, onClick: () => setCatForm({ ...catForm, color: c }), style: { backgroundColor: c }, className: `w-10 h-10 rounded-full shrink-0 transition-transform ${catForm.color === c ? 'scale-110 ring-2 ring-slate-400' : ''}` }))),
-                                    React.createElement("div", { className: "flex gap-2 pt-2" },
-                                        React.createElement("button", { onClick: () => setShowCreateCat(false), className: "flex-1 py-3 rounded-xl font-bold text-slate-500 bg-slate-100 dark:bg-slate-800" }, "Cancelar"),
-                                        React.createElement("button", { onClick: () => { if (catForm.name) { setCategories([...categories, { id: `c-${Date.now()}`, ...catForm }]); setShowCreateCat(false); setShowCatModal(true); } }, className: "flex-1 py-3 rounded-xl font-bold text-white bg-indigo-500 shadow-md" }, "Crear")
-                                    )
-                                )
-                            )
-                        ),
-                        showGoalModal && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-transparent dark:border-slate-800" },
-                                React.createElement("h3", { className: "font-bold text-lg mb-4 text-slate-800 dark:text-white" }, "Nueva Meta"),
-                                React.createElement("div", { className: "space-y-4" },
-                                    React.createElement("input", { placeholder: "Nombre (ej. Moto)", className: "w-full p-4 bg-slate-50 dark:bg-black rounded-xl border-none outline-none font-bold text-slate-800 dark:text-white placeholder-slate-400", value: goalForm.name, onChange: e => setGoalForm({ ...goalForm, name: e.target.value }) }),
-                                    React.createElement("div", { className: "relative" }, React.createElement("span", { className: "absolute top-1/2 -translate-y-1/2 left-4 font-bold text-slate-400" }, "C$"), React.createElement("input", { type: "number", placeholder: "Objetivo", className: "w-full pl-10 p-4 bg-slate-50 dark:bg-black rounded-xl border-none outline-none font-bold text-slate-800 dark:text-white placeholder-slate-400", value: goalForm.target, onChange: e => setGoalForm({ ...goalForm, target: e.target.value }) })),
-                                    React.createElement("div", { className: "flex gap-2 pt-2" },
-                                        React.createElement("button", { onClick: () => setShowGoalModal(false), className: "flex-1 py-3 rounded-xl font-bold text-slate-500 bg-slate-100 dark:bg-slate-800" }, "Cancelar"),
-                                        React.createElement("button", { onClick: () => { if(goalForm.name && goalForm.target > 0) { setGoals([...goals, { id: Date.now(), walletMode, name: goalForm.name, target: Number(goalForm.target), current: 0, color: categories[Math.floor(Math.random()*categories.length)].color }]); setShowGoalModal(false); setGoalForm({name:'', target:''}); } }, className: `flex-1 py-3 rounded-xl font-bold text-white shadow-md ${theme.bg}` }, "Guardar")
-                                    )
-                                )
-                            )
-                        ),
-                        showNameEdit && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full max-w-xs rounded-3xl p-6 shadow-2xl border border-transparent dark:border-slate-800" },
-                                React.createElement("h3", { className: "font-bold text-center mb-4 text-slate-800 dark:text-white" }, "Cambiar Nombre"),
-                                React.createElement("input", { className: "w-full p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-center font-bold mb-4 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-400 placeholder-slate-400", value: tempName, onChange: e => setTempName(e.target.value), placeholder: "Tu nombre" }),
-                                React.createElement("div", { className: "flex gap-2" },
-                                    React.createElement("button", { onClick: () => setShowNameEdit(false), className: "flex-1 py-2 rounded-xl font-bold text-slate-500 bg-slate-100 dark:bg-slate-800" }, "Cancelar"),
-                                    React.createElement("button", { onClick: () => { if(tempName.trim()) { updateProfile({ name: tempName }); setShowNameEdit(false); } }, className: "flex-1 py-2 rounded-xl font-bold text-white bg-blue-500" }, "Guardar")
-                                )
-                            )
-                        ),
-                        showResetConfirm && React.createElement("div", { className: "fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 fade-in" },
-                            React.createElement("div", { className: "bg-white dark:bg-slate-850 w-full max-w-xs rounded-3xl p-6 shadow-2xl border border-rose-100 dark:border-rose-900/30" },
-                                React.createElement("div", { className: "flex justify-center mb-4 text-rose-500" }, React.createElement(AlertTriangle, { size: 40 })),
-                                React.createElement("h3", { className: "font-bold text-center mb-2 text-slate-800 dark:text-white" }, "¿Borrar ", currentProfile.name, "?"),
-                                React.createElement("p", { className: "text-center text-xs text-slate-400 mb-4" }, "Solo se borrarán transacciones y metas de este perfil."),
-                                React.createElement("div", { className: "flex gap-2" },
-                                    React.createElement("button", { onClick: () => setShowResetConfirm(false), className: "flex-1 py-2 rounded-xl font-bold text-slate-500 bg-slate-100 dark:bg-slate-800" }, "No"),
-                                    React.createElement("button", { onClick: handleResetProfileData, className: "flex-1 py-2 rounded-xl font-bold text-white bg-rose-500" }, "Sí, Borrar")
-                                )
-                            )
-                        )
-                    )
-                )
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App));
-    </script>
-</body>
-</html>
-
-
+                                    React.createElement("button", { onClick: () => setWalletMode('partner'), className: `px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition-all ${walletMode === 'partner' ? 'bg-white text-slate-800 shadow-sm' : 'text-white/70'}` }, React.createElement(Heart,
